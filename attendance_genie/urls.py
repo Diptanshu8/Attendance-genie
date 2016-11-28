@@ -21,5 +21,6 @@ urlpatterns = [
     #url(r'^admin/', admin.site.urls),
     url(r'^$',views.home_page,name = 'home'),
     url(r'^mark_attendance',views.mark_attendance,name = 'mark_attendance'),
-    url(r'^show_attendance',views.show_attendance,name = 'show_attendance')
+    url(r'^show_attendance',views.show_attendance,name = 'show_attendance'),
+    url(r'^show',views.show_subejcts_for_a_day,name = 'show_subjects')
     ]
