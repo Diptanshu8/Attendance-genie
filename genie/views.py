@@ -31,12 +31,18 @@ def mark_attendance(request):
         index = 0
         for item in subject.objects.filter(day__name = str(d)):
             if data[index]==present:
-                item.attendace+=1
+                item.attendance+=1
             item.total+=1 
             index+=1
-            print item.name,item.attendace,item.total
+            print item.name,item.attendnace,item.total
             item.save()
         response = JsonResponse({'day':d,'subjects':subjects})
     return response
 def show_attendance(request):
-    pass
+    if request.method == 'GET':
+        subject_name = request.GET['subject']
+        for item in subject.objects.filter(name=subject_name):
+            output = 'You have attended {0} classes of {1}'.format(item.attendance,item.total)
+        print output
+        response = JsonResponse({'subject':subject_name,'score':output})
+    return response

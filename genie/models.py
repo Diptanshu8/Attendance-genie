@@ -7,7 +7,7 @@ class subject(models.Model):
     name = models.CharField(max_length = 50)
     code = models.CharField(max_length = 10)
     credits = models.IntegerField()
-    attendace = models.IntegerField(default=0)
+    attendance = models.IntegerField(default=0)
     total = models.IntegerField(default=0)
 
     def __str__(self):
