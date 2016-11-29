@@ -20,16 +20,23 @@ def show_subejcts_for_a_day(request):
         #print temp
         response = JsonResponse({'subject_list':subjects,'day':d,'output':output})
     return response
+
 def mark_attendance(request):
-    path = os.getcwd()+'/genie/timetable.csv'
-    day = 'Monday'
-    with open(path,'r') as f:
-        r = csv.DictReader(f)
-        for row in r:
-            if row['Day'] == day:
-                subjects = eval(row['subject'])
-    if request.method =='POST':
-        return render(request,'note_attendance.html',{'subject_name':request.POST['subject_name']})
-    return render(request,'note_attendance.html',{'subject_name':subjects})
+    present = 'p'
+    absent = 'a'
+    if request.method == 'GET':
+        d = request.GET['day']
+        data = str(request.GET['data'])
+        subjects = [item.name for item in subject.objects.filter(day__name = str(d))]
+        index = 0
+        for item in subject.objects.filter(day__name = str(d)):
+            if data[index]==present:
+                item.attendace+=1
+            item.total+=1 
+            index+=1
+            print item.name,item.attendace,item.total
+            item.save()
+        response = JsonResponse({'day':d,'subjects':subjects})
+    return response
 def show_attendance(request):
     pass
