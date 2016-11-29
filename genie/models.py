@@ -24,3 +24,17 @@ class day(models.Model):
 
     class Meta:
         db_table = 'day'
+
+class slot(models.Model):
+    name = models.CharField(max_length=5)
+    number_of_classses = models.IntegerField()
+    day_time = models.TextField()
+    days_for_slot = models.ManyToManyField(day)
+    subject_with_this_slot = models.OneToOneField(subject,default=None)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = "slot"
+ 
