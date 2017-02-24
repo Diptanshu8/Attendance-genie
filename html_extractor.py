@@ -40,11 +40,11 @@ def subject_and_venue_extraction(data):
             subject_venue_dict[str(d[0:subject_code_length+1])]=d[subject_code_length+1:]
     return subject_venue_dict
 
-def creating_triple_tupple(day_data,subject_venue_dict):
+def creating_triple_tupple(day_data,subject_venue_dict,slots):
     tripple_tupple_data = []
-    for item in day_data:
+    for i,item in enumerate(day_data):
         if item != '*':
-            tripple_tupple_data.append((item[:subject_code_length+1],subject_venue_dict[item[:subject_code_length+1]]))
+            tripple_tupple_data.append((item[:subject_code_length+1],subject_venue_dict[item[:subject_code_length+1]],slots[i] ))
         else:
             tripple_tupple_data.append('*')
     return tripple_tupple_data
@@ -63,7 +63,7 @@ subjects_venues_dict = subject_and_venue_extraction(data)
 temp = data
 timetable = {}
 for day in days[1:]:
-    timetable[day]=creating_triple_tupple(temp[:number_of_slots],subjects_venues_dict)
+    timetable[day]=creating_triple_tupple(temp[:number_of_slots],subjects_venues_dict,slots)
     temp = temp[number_of_slots:]
 for item in timetable.keys():
     print item,timetable[item]
