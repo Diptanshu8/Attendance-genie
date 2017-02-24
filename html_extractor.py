@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup,BeautifulStoneSoup
 import json
+import csv
 def removing_blanks_for_no_subject(data):
     for item in data:
         if item == u'\xa0':
@@ -71,8 +72,18 @@ def writing_JSON(timetable):
     with open(output_JSON_file,"w") as f:
         f.write(json.dumps(timetable))
 
+def writing_csv():
+    first_row = ('Subject name','attended','absence','total')
+    with open(output_csv_file,'w') as f:
+        writer = csv.writer(f)
+        writer.writerow(first_row)
+        for subject in subjects_venues_dict.keys():
+            row = (str(subject),0,0,0)
+            writer.writerow(row)
+
 timetable_html_file="timetable.html"
 output_JSON_file="timetable.txt"
+output_csv_file = "attendance.csv"
 soup = reading_html(timetable_html_file)
 boundary = boundary_detection(soup)
 slots,days = slots_and_days(boundary)
@@ -82,5 +93,6 @@ subject_code_length = 6
 subjects_venues_dict = subject_and_venue_extraction(data)
 timetable = populate_timetable(days[1:],data)
 writing_JSON(timetable)
+writing_csv()
 #print_timetable(timetable)
 
