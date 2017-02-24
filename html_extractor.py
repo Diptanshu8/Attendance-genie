@@ -24,8 +24,12 @@ def slots_and_days(boundary):
 def table_data_extraction(soup):
     tableheader = soup.find_all('td',align="center")
     data = []
+    temp = []
     for item in tableheader:
-        data.append(item.get_text())
+        if item.get('colspan'):
+            data += int(item.get('colspan'))*[item.get_text()]
+        else:
+            data.append(item.get_text())
     data = removing_blanks_for_no_subject(data)
     return data
 
@@ -53,19 +57,16 @@ boundary = boundary_detection(soup)
 slots,days = slots_and_days(boundary)
 number_of_slots = len(slots)
 data=table_data_extraction(soup)
-print data
 subject_code_length = 6
 subjects_venues_dict = subject_and_venue_extraction(data)
 
 temp = data
 timetable = {}
 for day in days[1:]:
-    #if day == 'Wed':
-    #    print temp[:number_of_slots]
     timetable[day]=creating_triple_tupple(temp[:number_of_slots],subjects_venues_dict)
     temp = temp[number_of_slots:]
-#for item in timetable.keys():
-#    print item,timetable[item]
+for item in timetable.keys():
+    print item,timetable[item]
 """for item in data:
     if item.has_key('class'):
         day = str(item.string)
