@@ -1,26 +1,33 @@
 from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse
 import csv,os
+import json
 from genie.models import day,subject,slot
 
 # Create your views here.
+def loading_timetable():
+    addr="timetable.txt"
+    with open(addr,"r") as f:
+        timetable = json.loads(f.read())
+    return timetable
 def home_page(request):
     return render(request,'home.html')
 def show_subejcts_for_a_day(request):
     if request.method == 'GET':
         d = request.GET['day']
-        output= {}
-        subjects = [item.name for item in subject.objects.filter(day__name = str(d))]
-        for name in subjects:
-            for s in slot.objects.filter(subject_with_this_slot__name=str(name)):
-                data = eval(s.day_time)
-                output[str(name)] = data[str(d)]
+        timetable = loading_timetable()
+        output = [item for item in timetable[d] if item!="*"]
+        response = JsonResponse({'day':d,'output':output})
+    return response
+###PREVIOUS SYNTAX... leave it till database integration is not done
+#        subjects = [item.name for item in subject.objects.filter(day__name = str(d))]
+#        for name in subjects:
+#            for s in slot.objects.filter(subject_with_this_slot__name=str(name)):
+#                data = eval(s.day_time)
+#                output[str(name)] = data[str(d)]
         #subject_slot = [ slot.objects.filter(subject_with_this_slot__name=str(item)) for item in subjects ]
         #temp = [item.name for item in subject_slot] 
         #print temp
-        response = JsonResponse({'subject_list':subjects,'day':d,'output':output})
-    return response
-
 def mark_attendance(request):
     present = 'p'
     absent = 'a'
