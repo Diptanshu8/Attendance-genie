@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup,BeautifulStoneSoup
+import json
 def removing_blanks_for_no_subject(data):
     for item in data:
         if item == u'\xa0':
@@ -49,33 +50,37 @@ def creating_triple_tupple(day_data,subject_venue_dict,slots):
             tripple_tupple_data.append('*')
     return tripple_tupple_data
 
-with open("timetable.html") as f:
-    html_doc = f.read()
-soup = BeautifulSoup(html_doc,'lxml')
+def populate_timetable(days,temp):
+    timetable = {}
+    for day in days:
+        timetable[day]=creating_triple_tupple(temp[:number_of_slots],subjects_venues_dict,slots)
+        temp = temp[number_of_slots:]
+    return timetable
 
+def print_timetable(timetable):
+    for item in timetable.keys():
+        print item,timetable[item]
+
+def reading_html(addr):
+    with open(addr) as f:
+        html_doc = f.read()
+    soup = BeautifulSoup(html_doc,'lxml')
+    return soup
+
+def writing_JSON(timetable):
+    with open(output_JSON_file,"w") as f:
+        f.write(json.dumps(timetable))
+
+timetable_html_file="timetable.html"
+output_JSON_file="timetable.txt"
+soup = reading_html(timetable_html_file)
 boundary = boundary_detection(soup)
 slots,days = slots_and_days(boundary)
 number_of_slots = len(slots)
 data=table_data_extraction(soup)
 subject_code_length = 6
 subjects_venues_dict = subject_and_venue_extraction(data)
+timetable = populate_timetable(days[1:],data)
+writing_JSON(timetable)
+#print_timetable(timetable)
 
-temp = data
-timetable = {}
-for day in days[1:]:
-    timetable[day]=creating_triple_tupple(temp[:number_of_slots],subjects_venues_dict,slots)
-    temp = temp[number_of_slots:]
-for item in timetable.keys():
-    print item,timetable[item]
-"""for item in data:
-    if item.has_key('class'):
-        day = str(item.string)
-        timetable[str(item.string)] = []
-    else:
-        timetable[day].append(str(item.b))
-    #timetable[str(item[0])]=map(str,item[1:])
-
-print timetable
-#for line in a:
-#    print line.get()
-"""
