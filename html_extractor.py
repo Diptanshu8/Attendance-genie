@@ -78,7 +78,7 @@ def writing_csv():
         writer = csv.writer(f)
         writer.writerow(first_row)
         for subject in subjects_venues_dict.keys():
-            row = (str(subject),0,0,0)
+            row = (str(subject),[],[])
             writer.writerow(row)
 
 timetable_html_file="timetable.html"
