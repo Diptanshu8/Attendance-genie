@@ -63,11 +63,15 @@ def mark_attendance(request):
         data = str(request.GET['data'])
         subjects = [item for item in timetable[d] if item!="*"]
         for i,subject in enumerate(subjects):
-            if data[i] == 'p' or data[i]=='P':
+            if date in database[subject[0]][0] or date in database[subject[0]][1]:
+                status = "Attendance already marked"
+                break
+            elif data[i] == 'p' or data[i]=='P':
                 database[subject[0]][0].append(date)
             elif data[i] =='a' or data[i] == 'A':
                 database[subject[0]][1].append(date)
-        status = updating_database(database)
+        if 'status' not in locals():
+            status = updating_database(database)
         response = JsonResponse({'day':d,'status':status})
     return response
 ###PREVIOUS SYNTAX... leave it till database integration is not done
@@ -81,10 +85,14 @@ def mark_attendance(request):
         #    print item.name,item.attendnace,item.total
         #    item.save()
 def show_attendance(request):
+    timetable= loading_timetable()
+    database = loading_database()
     if request.method == 'GET':
         subject_name = request.GET['subject']
-        for item in subject.objects.filter(name=subject_name):
-            output = 'You have attended {0} classes of {1}'.format(item.attendance,item.total)
-        print output
+        output_attended_count = len(database[subject_name][0])
+        output_attended_dates = database[subject_name][0]
+        output_missed_count = len(database[subject_name][1])
+        output_missed_dates = database[subject_name][1]
+        output= {"present":output_attended_count,"present_dates":output_attended_dates,"absent":output_missed_count,"absent_dates":output_missed_dates}
         response = JsonResponse({'subject':subject_name,'score':output})
     return response
