@@ -4,15 +4,22 @@ import csv,os
 import json
 import datetime
 from genie.models import day,subject,slot
+import yaml
 
+try:
+    config = yaml.load(file("genie.conf",'r'))
+except:
+    print "No config exists"
 # Create your views here.
 def loading_timetable():
-    addr="timetable.txt"
+    #addr="timetable.txt"
+    addr = config['timetable']['file']
     with open(addr,"r") as f:
         timetable = json.loads(f.read())
     return timetable
 def loading_database():
-    addr = "attendance.csv"
+    addr = config['database']['file']
+    #addr = "attendance.csv"
     database={}
     with open(addr,'r') as f:
         reader = csv.reader(f)
@@ -23,7 +30,8 @@ def loading_database():
                 pass
     return database
 def updating_database(database):
-    addr = "attendance.csv"
+    #addr = "attendance.csv"
+    addr = config['database']['file']
     first_row = ('Subject name','attended','absence')
     with open(addr,'w') as f:
         writer = csv.writer(f)
